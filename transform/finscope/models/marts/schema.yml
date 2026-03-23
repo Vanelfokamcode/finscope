@@ -1,0 +1,34 @@
+version: 2
+
+models:
+  - name: mart_indicateurs
+    description: "Indicateurs financiers calculés : EBITDA, BFR, ratios.
+      Source : stg_bilans. ~4.7M lignes, entreprises FR 2010-2025."
+
+    columns:
+      - name: bilan_key
+        tests:
+          - unique
+          - not_null
+
+      - name: ebitda
+        description: "EBE + dotations amortissements (en €)"
+        tests:
+          - not_null
+
+      - name: bfr
+        description: "Stocks + Créances clients - Dettes fournisseurs (en €)"
+        tests:
+          - not_null
+
+      - name: flag_endettement
+        tests:
+          - accepted_values:
+              values: ['SAIN', 'ENDETTÉ', 'TRES_ENDETTÉ', 'CP_NEGATIFS', 'SANS_DETTE']
+              quote: true
+
+      - name: flag_liquidite
+        tests:
+          - accepted_values:
+              values: ['LIQUIDE', 'TENSION', 'RISQUE']
+              quote: true

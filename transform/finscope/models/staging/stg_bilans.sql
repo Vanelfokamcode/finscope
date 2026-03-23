@@ -34,6 +34,7 @@ cleaned AS (
         CAST(COALESCE(dettes_financieres, 0)       AS BIGINT)        AS dettes_financieres,
         CAST(COALESCE(dettes_fournisseurs, 0)      AS BIGINT)        AS dettes_fournisseurs,
         CAST(COALESCE(dettes_fiscales, 0)          AS BIGINT)        AS dettes_fiscales,
+        CAST(COALESCE(actif_circulant_net, 0) AS BIGINT) AS actif_circulant_net,
 
         -- Effectifs
         COALESCE(effectif_moyen, 0)                                  AS effectif_moyen,
