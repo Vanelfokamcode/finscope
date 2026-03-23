@@ -32,3 +32,20 @@ models:
           - accepted_values:
               values: ['LIQUIDE', 'TENSION', 'RISQUE']
               quote: true
+  - name: mart_evolution
+    description: "Variation N vs N-1 par entreprise. LAG() sur CA, marge, BFR.
+      Flag dégradation : ALERTE / VIGILANCE / STABLE.
+      Source : mart_indicateurs."
+
+    columns:
+      - name: bilan_key
+        tests:
+          - unique
+          - not_null
+
+      - name: flag_degradation
+        description: "ALERTE=baisse CA+marge 2 ans, VIGILANCE=1 an, STABLE=OK, NULL=1ère année"
+        tests:
+          - accepted_values:
+              values: ['ALERTE', 'VIGILANCE', 'STABLE']
+              quote: true
