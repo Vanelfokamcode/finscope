@@ -1,0 +1,29 @@
+[0m13:08:23.262839 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7f8936b0b8f0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7f893719a300>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7f8938feac00>]}
+
+
+============================== 13:08:23.266372 | ca4b1fb4-8a28-4add-ad6d-de6fd7eb7859 ==============================
+[0m13:08:23.266372 [info ] [MainThread]: Running with dbt=1.11.7
+[0m13:08:23.267041 [debug] [MainThread]: running dbt with arguments {'send_anonymous_usage_stats': 'True', 'empty': 'None', 'no_print': 'None', 'target_path': 'None', 'introspect': 'True', 'profiles_dir': '/home/vanel/.dbt', 'version_check': 'True', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'debug': 'False', 'log_path': 'logs', 'use_colors': 'True', 'warn_error': 'None', 'static_parser': 'True', 'invocation_command': 'dbt init finscope', 'log_format': 'default', 'indirect_selection': 'eager', 'write_json': 'True', 'log_cache_events': 'False', 'use_experimental_parser': 'False', 'quiet': 'False', 'cache_selected_only': 'False', 'partial_parse': 'True', 'fail_fast': 'False', 'printer_width': '80'}
+[0m13:08:23.277982 [debug] [MainThread]: Starter project path: /home/vanel/finscope/venv/lib/python3.12/site-packages/dbt/include/starter_project
+[0m13:08:23.297708 [info ] [MainThread]: 
+Your new dbt project "finscope" was created!
+
+For more information on how to configure the profiles.yml file,
+please consult the dbt documentation here:
+
+  https://docs.getdbt.com/docs/configure-your-profile
+
+One more thing:
+
+Need help? Don't hesitate to reach out to us via GitHub issues or on Slack:
+
+  https://community.getdbt.com/
+
+Happy modeling!
+
+[0m13:08:23.299332 [info ] [MainThread]: Setting up your profile.
+[0m13:08:46.247983 [debug] [MainThread]: Resource report: {"command_name": "init", "command_success": true, "command_wall_clock_time": 19.477522, "process_in_blocks": "64", "process_kernel_time": 0.120883, "process_mem_max_rss": "141704", "process_out_blocks": "72", "process_user_time": 1.835231}
+[0m13:08:46.248686 [debug] [MainThread]: Command `dbt init` succeeded at 13:08:46.248515 after 19.48 seconds
+[0m13:08:46.249088 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7f8937084b00>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7f893611cb30>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7f89362503e0>]}
+[0m13:08:46.249601 [debug] [MainThread]: Flushing usage events
+[0m13:08:46.668530 [debug] [MainThread]: An error was encountered while trying to flush usage events

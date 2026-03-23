@@ -1,0 +1,56 @@
+version: 2
+
+models:
+  - name: stg_bilans
+    description: "Staging layer — bilans INPI nettoyés et normalisés.
+      Source : raw_bilans (pivot liasse XBRL Day 02).
+      4.8M lignes, entreprises françaises 2010-2025."
+
+    columns:
+
+      - name: bilan_key
+        description: "Clé surrogate : siren_annee (ex: 123456789_2023)"
+        tests:
+          - unique
+          - not_null
+
+      - name: siren
+        description: "Identifiant entreprise 9 chiffres"
+        tests:
+          - not_null
+
+      - name: annee_fiscale
+        description: "Année de clôture de l'exercice"
+        tests:
+          - not_null
+          - accepted_values:
+              values: [2010,2011,2012,2013,2014,2015,
+                       2016,2017,2018,2019,2020,2021,
+                       2022,2023,2024,2025]
+
+      - name: date_cloture
+        description: "Date de clôture de l'exercice"
+        tests:
+          - not_null
+
+      - name: type_bilan
+        description: "Type de liasse : C (complet), S (simplifié), K (consolidé)"
+        tests:
+          - accepted_values:
+              values: ['C', 'S', 'K', 'N']
+              quote: true
+
+      - name: chiffre_affaires
+        description: "CA net (PCG FL) — COALESCE(x, 0)"
+        tests:
+          - not_null
+
+      - name: capitaux_propres
+        description: "Capitaux propres (PCG DL) — peut être négatif"
+        tests:
+          - not_null
+
+      - name: total_actif
+        description: "Total actif (PCG EE) — toujours positif"
+        tests:
+          - not_null
