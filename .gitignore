@@ -20,3 +20,5 @@ venv/
 # dbt
 transform/finscope/target/
 transform/finscope/dbt_packages/
+data/raw/StockUniteLegale*
+data/raw/sirene*
