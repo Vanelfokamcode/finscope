@@ -1,0 +1,362 @@
+<!-- FinScope — Dashboard Frontend Day 08 -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FinScope — Intelligence Financière</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080b0f; --surface: #0d1117; --panel: #111820;
+  --border: #1c2530; --accent: #3b9eff; --green: #2ddf8f;
+  --yellow: #f5c542; --red: #ff5c6b; --purple: #a78bfa;
+  --text: #c9d8e8; --muted: #4a6278; --dim: #2a3a4a;
+  --mono: 'JetBrains Mono', monospace; --sans: 'Syne', sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: var(--mono);
+  font-size: 13px; min-height: 100vh; }
+body::after { content: ''; position: fixed; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(transparent 0px, transparent 2px,
+  rgba(0,0,0,0.05) 2px, rgba(0,0,0,0.05) 4px); z-index: 1000; }
+
+/* ── Header ── */
+header { display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 32px; background: var(--surface);
+  border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+.logo { font-family: var(--sans); font-weight: 800; font-size: 22px; letter-spacing: 2px; }
+.logo span { color: var(--accent); }
+.tagline { font-size: 10px; color: var(--muted); letter-spacing: 2px; }
+
+/* ── Search ── */
+.search-wrap { max-width: 720px; margin: 48px auto 0; padding: 0 24px; }
+.search-label { font-size: 10px; letter-spacing: 2px; color: var(--muted);
+  text-transform: uppercase; margin-bottom: 10px; }
+.search-row { display: flex; gap: 10px; }
+.search-input { flex: 1; background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 3px; color: var(--text); font-family: var(--mono); font-size: 15px;
+  padding: 12px 18px; outline: none; letter-spacing: 2px; transition: border-color 0.2s; }
+.search-input:focus { border-color: var(--accent); }
+.search-input::placeholder { color: var(--dim); font-size: 13px; letter-spacing: 1px; }
+.search-btn { background: var(--accent); border: none; color: #fff;
+  font-family: var(--mono); font-size: 11px; letter-spacing: 2px; padding: 12px 24px;
+  border-radius: 3px; cursor: pointer; transition: opacity 0.2s; text-transform: uppercase; }
+.search-btn:hover { opacity: 0.85; }
+.search-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.search-hint { font-size: 11px; color: var(--muted); margin-top: 8px; }
+
+/* ── État initial / Loading / Erreur ── */
+.state-msg { max-width: 720px; margin: 32px auto; padding: 0 24px;
+  text-align: center; color: var(--muted); font-size: 12px; line-height: 1.8; }
+.state-msg.error { color: var(--red); }
+.spinner { display: inline-block; width: 16px; height: 16px;
+  border: 2px solid var(--border2); border-top-color: var(--accent);
+  border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 8px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Dashboard ── */
+.dashboard { max-width: 960px; margin: 32px auto; padding: 0 24px 60px; display: none; }
+.company-header { margin-bottom: 24px; }
+.company-siren { font-size: 10px; color: var(--muted); letter-spacing: 2px; margin-bottom: 4px; }
+.company-name { font-family: var(--sans); font-weight: 800; font-size: 28px; color: #fff; }
+.company-meta { display: flex; gap: 12px; margin-top: 8px; flex-wrap: wrap; }
+.meta-pill { font-size: 10px; letter-spacing: 1px; padding: 3px 10px; border-radius:2px;
+  background: rgba(59,158,255,0.08); border: 1px solid rgba(59,158,255,0.15); color: var(--accent); }
+.meta-pill.warn { background: rgba(255,92,107,0.08); border-color: rgba(255,92,107,0.2); color: var(--red); }
+.meta-pill.ok { background: rgba(45,223,143,0.08); border-color: rgba(45,223,143,0.2); color: var(--green); }
+
+/* ── Year selector ── */
+.year-nav { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
+.year-btn { background: transparent; border: 1px solid var(--border);
+  color: var(--muted); font-family: var(--mono); font-size: 11px; padding: 5px 14px;
+  border-radius: 2px; cursor: pointer; transition: all 0.2s; }
+.year-btn:hover { border-color: var(--border2); color: var(--text); }
+.year-btn.active { border-color: var(--accent); color: var(--accent);
+  background: rgba(59,158,255,0.06); }
+
+/* ── Metrics grid ── */
+.section-title { font-size: 10px; letter-spacing: 2px; color: var(--muted);
+  text-transform: uppercase; margin-bottom: 12px; padding-bottom: 6px;
+  border-bottom: 1px solid var(--border); }
+.metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 24px; }
+@media(max-width: 600px) { .metrics-grid { grid-template-columns: 1fr 1fr; } }
+.metric-card { background: var(--panel); border: 1px solid var(--border);
+  border-radius: 4px; padding: 14px 16px; transition: border-color 0.2s; }
+.metric-card:hover { border-color: var(--border2); }
+.metric-label { font-size: 10px; color: var(--muted); letter-spacing: 1.5px;
+  text-transform: uppercase; margin-bottom: 8px; }
+.metric-value { font-family: var(--sans); font-weight: 800; font-size: 22px; }
+.metric-value.green { color: var(--green); }
+.metric-value.yellow { color: var(--yellow); }
+.metric-value.red { color: var(--red); }
+.metric-value.muted { color: var(--muted); }
+.metric-sub { font-size: 10px; color: var(--muted); margin-top: 4px; }
+.metric-flag { display: inline-block; font-size: 10px; letter-spacing: 1px;
+  padding: 1px 7px; border-radius: 2px; margin-top: 4px; font-weight: 600; }
+.flag-ok { background: rgba(45,223,143,0.1); border: 1px solid rgba(45,223,143,0.25); color: var(--green); }
+.flag-warn { background: rgba(245,197,66,0.1); border: 1px solid rgba(245,197,66,0.25); color: var(--yellow); }
+.flag-danger { background: rgba(255,92,107,0.1); border: 1px solid rgba(255,92,107,0.25); color: var(--red); }
+
+/* ── Evolution table ── */
+.evo-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 24px; }
+.evo-table th { font-size: 10px; letter-spacing: 1.5px; color: var(--muted); text-transform: uppercase;
+  padding: 8px 12px; border-bottom: 1px solid var(--border); text-align: left; font-weight: 400; }
+.evo-table td { padding: 9px 12px; border-bottom: 1px solid rgba(28,37,48,0.5); }
+.evo-table tr:last-child td { border-bottom: none; }
+.evo-table tr:hover td { background: rgba(255,255,255,0.01); }
+.delta-pos { color: var(--green); }
+.delta-neg { color: var(--red); }
+.flag-cell { font-size: 10px; letter-spacing: 1px; padding: 1px 6px; border-radius: 2px; }
+
+/* ── Bar chart ── */
+.chart-wrap { background: var(--panel); border: 1px solid var(--border);
+  border-radius: 4px; padding: 16px; margin-bottom: 24px; }
+canvas { width: 100%; }
+
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><span>Fin</span>Scope</div>
+  <div class="tagline">INTELLIGENCE FINANCIÈRE · DONNÉES INPI</div>
+</header>
+
+<!-- Recherche -->
+<div class="search-wrap">
+  <div class="search-label">Rechercher une entreprise</div>
+  <div class="search-row">
+    <input id="siren-input" class="search-input" type="text"
+      placeholder="SIREN 9 chiffres — ex: 910496462"
+      maxlength="9" inputmode="numeric">
+    <button id="search-btn" class="search-btn" onclick="search()">Analyser</button>
+  </div>
+  <div class="search-hint">Données INPI · entreprises françaises 2010-2024</div>
+</div>
+
+<!-- État -->
+<div id="state" class="state-msg">
+  Entrer un SIREN pour analyser une entreprise.
+</div>
+
+<!-- Dashboard -->
+<div id="dashboard" class="dashboard">
+  <div class="company-header">
+    <div class="company-siren" id="d-siren"></div>
+    <div class="company-meta" id="d-meta"></div>
+  </div>
+
+  <div class="year-nav" id="year-nav"></div>
+
+  <div class="section-title">Indicateurs financiers</div>
+  <div class="metrics-grid" id="metrics-grid"></div>
+
+  <div class="section-title">Évolution CA — toutes les années</div>
+  <div class="chart-wrap"><canvas id="chart-ca" height="120"></canvas></div>
+
+  <div class="section-title">Évolution détaillée</div>
+  <table class="evo-table" id="evo-table"></table>
+</div>
+
+<script>
+const API = "http://localhost:8003";
+let allIndicateurs = [], allEvolution = [], currentYear = null;
+
+// ── Utilitaires ──────────────────────────────────────────────
+function fmt(v, unit="") {
+  if (v == null) return "—";
+  if (unit === "€") {
+    if (Math.abs(v) >= 1e6) return (v/1e6).toFixed(1)+" M€";
+    if (Math.abs(v) >= 1e3) return Math.round(v/1e3)+" k€";
+    return v+" €";
+  }
+  if (unit === "%") return (v > 0 ? "+" : "") + v.toFixed(1) + "%";
+  if (unit === "j") return Math.round(v) + " j";
+  return v.toFixed(2) + unit;
+}
+
+function col(v, lo, hi, inv=false) {
+  if (v == null) return "muted";
+  if (!inv) return v >= hi ? "green" : v >= lo ? "yellow" : "red";
+  return v <= lo ? "green" : v <= hi ? "yellow" : "red";
+}
+
+function flagCss(flag) {
+  return { 'ALERTE':'flag-danger', 'VIGILANCE':'flag-warn',
+    'STABLE':'flag-ok', 'LIQUIDE':'flag-ok', 'TENSION':'flag-warn',
+    'RISQUE':'flag-danger', 'SAIN':'flag-ok',
+    'ENDETTÉ':'flag-warn', 'TRES_ENDETTÉ':'flag-danger',
+    'CP_NEGATIFS':'flag-danger', 'SANS_DETTE':'flag-ok' }[flag] || 'flag-warn';
+}
+
+function setState(msg, isError=false, loading=false) {
+  const el = document.getElementById("state");
+  el.className = "state-msg" + (isError ? " error" : "");
+  el.innerHTML = loading ? `<span class="spinner"></span>${msg}` : msg;
+  document.getElementById("dashboard").style.display = "none";
+}
+
+// ── Recherche principale ──────────────────────────────────────
+async function search() {
+  const siren = document.getElementById("siren-input").value.trim();
+  if (siren.length !== 9 || !/^\d+$/.test(siren)) {
+    setState("SIREN invalide — 9 chiffres requis.", true);
+    return;
+  }
+
+  const btn = document.getElementById("search-btn");
+  btn.disabled = true;
+  setState(`Chargement des données pour ${siren}…`, false, true);
+
+  try {
+    const [rInd, rEvo] = await Promise.all([
+      fetch(`${API}/indicateurs?siren=${siren}`),
+      fetch(`${API}/evolution?siren=${siren}`)
+    ]);
+
+    if (!rInd.ok) {
+      const e = await rInd.json();
+      throw new Error(e.detail);
+    }
+
+    const dInd = await rInd.json();
+    const dEvo = rEvo.ok ? (await rEvo.json()) : { evolution: [] };
+
+    allIndicateurs = dInd.indicateurs;
+    allEvolution   = dEvo.evolution || [];
+
+    renderDashboard(siren, dInd, dEvo);
+  } catch(e) {
+    setState(`Erreur : ${e.message}`, true);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ── Rendu dashboard ───────────────────────────────────────────
+function renderDashboard(siren, dInd, dEvo) {
+  document.getElementById("state").innerHTML = "";
+  const dash = document.getElementById("dashboard");
+  dash.style.display = "block";
+
+  document.getElementById("d-siren").textContent = `SIREN ${siren}`;
+
+  // Meta pills
+  const latest = allIndicateurs[0];
+  const evoLatest = allEvolution[0];
+  const degradCss = { 'ALERTE':'warn','VIGILANCE':'warn','STABLE':'ok' };
+  document.getElementById("d-meta").innerHTML = `
+    <span class="meta-pill">${dInd.nb_exercices} exercice${dInd.nb_exercices>1?'s':''}</span>
+    <span class="meta-pill">${latest?.annee_fiscale || '—'}</span>
+    <span class="meta-pill">${latest?.type_bilan || '—'}</span>
+    ${evoLatest?.flag_degradation ? `<span class="meta-pill ${degradCss[evoLatest.flag_degradation]||''}">${evoLatest.flag_degradation}</span>` : ''}
+    ${latest?.capitaux_propres_negatifs ? '<span class="meta-pill warn">CP NÉGATIFS</span>' : ''}
+  `;
+
+  // Year navigation
+  const years = allIndicateurs.map(r => r.annee_fiscale);
+  currentYear = years[0];
+  document.getElementById("year-nav").innerHTML = years.map(y => `
+    <button class="year-btn ${y===currentYear?'active':''}"
+      onclick="selectYear(${y})">${y}</button>
+  `).join("");
+
+  renderYear(currentYear);
+  renderEvoTable();
+  renderChart();
+}
+
+function selectYear(y) {
+  currentYear = y;
+  document.querySelectorAll(".year-btn").forEach(b => {
+    b.classList.toggle("active", parseInt(b.textContent) === y);
+  });
+  renderYear(y);
+}
+
+function renderYear(y) {
+  const ind = allIndicateurs.find(r => r.annee_fiscale === y);
+  if (!ind) return;
+
+  document.getElementById("metrics-grid").innerHTML = `
+    ${metric("Chiffre d'affaires", fmt(ind.chiffre_affaires,"€"), col(ind.chiffre_affaires,0,500000), "", fmt(ind.resultat_net,"€")+" RN")}
+    ${metric("EBITDA", fmt(ind.ebitda,"€"), col(ind.ebitda,0,1), ind.marge_ebitda_pct!=null?fmt(ind.marge_ebitda_pct,"%")+" marge":"")}
+    ${metric("Marge nette", ind.marge_nette_pct!=null?ind.marge_nette_pct.toFixed(1)+"%":"—", col(ind.marge_nette_pct,0,5), "", ind.flag_endettement,true)}
+    ${metric("BFR", fmt(ind.bfr,"€"), col(ind.bfr_jours,-1,60,true), ind.bfr_jours!=null?fmt(ind.bfr_jours,"j")+" de CA":"")}
+    ${metric("Liquidité", ind.ratio_liquidite!=null?ind.ratio_liquidite.toFixed(2):"—", col(ind.ratio_liquidite,0.8,1.2), "", ind.flag_liquidite,true)}
+    ${metric("Endettement", ind.ratio_endettement!=null?ind.ratio_endettement.toFixed(2)+"×":"—", col(ind.ratio_endettement,2,1,true), "", ind.flag_endettement,true)}
+  `;
+}
+
+function metric(label, val, cls, sub="", flag="", showFlag=false) {
+  return `<div class="metric-card">
+    <div class="metric-label">${label}</div>
+    <div class="metric-value ${cls}">${val}</div>
+    ${sub ? `<div class="metric-sub">${sub}</div>` : ''}
+    ${showFlag && flag ? `<div class="metric-flag ${flagCss(flag)}">${flag}</div>` : ''}
+  </div>`;
+}
+
+function renderEvoTable() {
+  if (!allEvolution.length) return;
+  const rows = allEvolution.filter(r => r.variation_ca_pct != null);
+  document.getElementById("evo-table").innerHTML = `
+    <thead><tr>
+      <th>Année</th><th>CA</th><th>Var. CA</th>
+      <th>Marge nette</th><th>Δ Marge</th><th>BFR jours</th><th>Statut</th>
+    </tr></thead>
+    <tbody>
+    ${rows.map(r => {
+      const varCls = r.variation_ca_pct > 0 ? 'delta-pos' : 'delta-neg';
+      const dMCls  = r.delta_marge_nette != null ? (r.delta_marge_nette > 0 ? 'delta-pos':'delta-neg') : '';
+      const flag   = r.flag_degradation;
+      return `<tr>
+        <td>${r.annee_fiscale}</td>
+        <td>${fmt(r.chiffre_affaires,"€")}</td>
+        <td class="${varCls}">${fmt(r.variation_ca_pct,"%")}</td>
+        <td>${r.marge_nette_pct!=null?r.marge_nette_pct.toFixed(1)+"%":"—"}</td>
+        <td class="${dMCls}">${r.delta_marge_nette!=null?fmt(r.delta_marge_nette,"%"):"—"}</td>
+        <td>${fmt(r.bfr_jours,"j")}</td>
+        <td>${flag?`<span class="metric-flag ${flagCss(flag)}">${flag}</span>`:"—"}</td>
+      </tr>`;
+    }).join("")}
+    </tbody>
+  `;
+}
+
+function renderChart() {
+  const canvas = document.getElementById("chart-ca");
+  const ctx = canvas.getContext("2d");
+  const data = [...allIndicateurs].reverse().filter(r => r.chiffre_affaires > 0);
+  if (!data.length) return;
+
+  const W = canvas.offsetWidth, H = 120;
+  canvas.width = W; canvas.height = H;
+
+  const maxCA = Math.max(...data.map(r => r.chiffre_affaires));
+  const pad = { t:10, b:24, l:10, r:10 };
+  const bw = (W - pad.l - pad.r) / data.length - 4;
+  const ch = H - pad.t - pad.b;
+
+  ctx.clearRect(0, 0, W, H);
+
+  data.forEach((r, i) => {
+    const x = pad.l + i * (bw + 4);
+    const h = (r.chiffre_affaires / maxCA) * ch;
+    const y = pad.t + ch - h;
+    ctx.fillStyle = r.annee_fiscale === currentYear ? "#3b9eff" : "#1c3050";
+    ctx.fillRect(x, y, bw, h);
+    ctx.fillStyle = "#4a6278";
+    ctx.font = "9px JetBrains Mono";
+    ctx.textAlign = "center";
+    ctx.fillText(r.annee_fiscale, x + bw/2, H - 6);
+  });
+}
+
+// Enter key
+document.getElementById("siren-input")
+  .addEventListener("keydown", e => { if (e.key === "Enter") search(); });
+</script>
+</body>
+</html>
