@@ -49,3 +49,21 @@ models:
           - accepted_values:
               values: ['ALERTE', 'VIGILANCE', 'STABLE']
               quote: true
+      - name: mart_benchmark_sectoriel
+        description: "Benchmark par secteur NAF : P25/P50/P75 de chaque indicateur.
+          Grain : 1 ligne par naf_division × annee_fiscale.
+          Minimum 50 entreprises par panel. Source : mart_indicateurs × stg_entreprises."
+
+    columns:
+      - name: naf_division
+        tests:
+          - not_null
+
+      - name: annee_fiscale
+        tests:
+          - not_null
+
+      - name: nb_entreprises
+        description: "Toujours >= 50 (filtre HAVING)"
+        tests:
+          - not_null        

@@ -11,6 +11,5 @@ models:
   finscope:
     staging:
       +materialized: table
-      +schema: staging
     marts:
       +materialized: table
